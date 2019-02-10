@@ -1,0 +1,86 @@
+***************************
+INSTALLATION:
+
+1. Untar the source files using tar -xzvf Chi8_v1.tgz. This automatically
+creates the directory Chi8_v1 and unzips source files into it.
+
+2. Type 'make' to build the executables.
+
+***************************
+REQUIREMENTS:
+
+1. NVIDIA Telsa GPU of compute capability 2.0.
+
+2. NVIDIA CUDA toolkit 4.2 or greater. Chi8 v1.0 was built and tested with 
+nvcc release 4.2 V0.2.1221
+
+3. GSL 1.15 library for calculating chi-square p-values.
+
+4. CPU and GPU memory must be at least the GWAS dataset size in bytes.
+
+***************************
+THREADS:
+
+We recommend 256 threads when running Chi8.
+
+***************************
+USAGE:
+
+Usage: ./Chi8 <input file> <rows> <columns> <# of controls> <# of cases> <Bonferroni cutoff> > <output file>
+
+ <input file>            GWAS dataset with each SNP encoded into 0, 1, and 2 (standard encoding).
+ <rows>                  Total number of individuals in the dataset.
+ <columns>               Number of SNPs per individual.
+ <# of controls>         Number of controls in the GWAS dataset.
+ <# of cases>            Number of cases in the GWAS dataset.
+ <Bonferroni cutoff>     Bonferroni cutoff p-value
+ <CUDA DEVICE>           ID of CUDA DEVICE (starting from 0 through (total GPUS - 1))
+
+For example to determine the significant interacting SNP pairs in example1.txt GWAS 
+containing 2000 cases, 2000 controls, and 400000 SNPs on GPU 0 the command would be
+
+./Chi8 example1.txt 4000 400000 2000 2000 0.05 0 > output
+
+***************************
+INPUT FILE
+
+The input file is a matrix of SNPs representing subjects as rows and SNPs across the 
+columns with the genotypes recoded as a single allele dosage number.
+
+In our current implementation all cases should precede controls in the input file.
+
+The example dataset below has 10 subjects with 10 SNPs each encoded based on additive 
+allele frequencies. The first 5 rows are the cases and the next 5 rows are the 
+controls in the dataset.
+
+0 0 2 0 1 1 0 2 2 0
+0 0 2 0 2 0 0 2 2 0
+0 0 2 0 2 0 0 1 1 0
+1 1 2 0 1 0 0 2 1 0
+0 0 2 0 2 0 0 1 1 0
+0 0 2 0 2 1 0 2 2 0
+0 0 2 0 2 0 0 1 1 0
+0 0 2 0 2 0 0 1 2 0
+2 2 2 0 1 0 0 2 1 0
+0 0 2 0 1 0 0 2 2 0
+
+***************************
+OUTPUT:
+
+The output contains the significant SNP pairs from the GWAS dataset.
+Please note that the interacting SNP positions in the output are calculated 
+based on an index starting at 0.
+
+The output has the following columns
+
+SNP-1        SNP postion of the first interacting SNP
+Uni-p-value  Univariate chisquare 2-df p-value for SNP 1      
+SNP-2        SNP postion of the second interacting SNP
+Uni-p-value  Univariate chisquare 2-df p-value for SNP 2   
+Chi-Square   Pairwise chisquare 8-df value of the interacting SNPs   
+P-value      Pairwise chisquare 8-df p-value of the interacting SNPs
+
+***************************
+SUPPORT:
+
+Please contact Usman Roshan usman@cs.njit.edu.
